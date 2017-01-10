@@ -44,16 +44,18 @@ class Note {
 			$stmt = $this->connection->prepare("
 				SELECT id, toit, kalorid, kuupaev
 				FROM toitumine2
+				WHERE deleted IS NULL
 				AND (toit LIKE ? OR kalorid LIKE ? OR kuupaev LIKE ?)
 				ORDER BY $sort $orderBy
 		");
 		$searchWord = "%".$q."%";
-		$stmt->bind_param("ss", $searchWord, $searchWord);
+		$stmt->bind_param("sss", $searchWord, $searchWord, $searchWord);
 		}else{
 			//ei otsi
 			$stmt = $this->connection->prepare("
 				SELECT id, toit, kalorid, kuupaev
 				FROM toitumine2
+				WHERE deleted IS NULL
 				ORDER BY $sort $orderBy
 		");
 		}
@@ -82,7 +84,7 @@ class Note {
 	
 	function getSingleNoteData($edit_id){
     		
-		$stmt = $this->connection->prepare("SELECT toit, kalorid, kuupaev FROM toitumine2 WHERE id=?");
+		$stmt = $this->connection->prepare("SELECT toit, kalorid, kuupaev FROM toitumine2 WHERE id=? AND deleted IS NULL");
 
 		$stmt->bind_param("i", $edit_id);
 		$stmt->bind_result($toit, $kalorid, $kuupaev);
@@ -114,7 +116,7 @@ class Note {
 
 	function updateNote($id, $toit, $kalorid, $kuupaev){
 				
-		$stmt = $this->connection->prepare("UPDATE toitumine2 SET toit=?, kalorid=?, kuupaev=? WHERE id=?");
+		$stmt = $this->connection->prepare("UPDATE toitumine2 SET toit=?, kalorid=?, kuupaev=? WHERE id=? AND deleted IS NULL");
 		$stmt->bind_param("sssi",$toit, $kalorid, $kuupaev, $id);
 		
 		// kas õnnestus salvestada
