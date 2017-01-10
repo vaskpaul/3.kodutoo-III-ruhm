@@ -24,16 +24,18 @@
 		exit();
 	}
 	
-	if (	isset($_POST["note"]) && 
-			isset($_POST["color"]) && 
-			!empty($_POST["note"]) && 
-			!empty($_POST["color"]) 
+	if (	isset($_POST["toit"]) && 
+			isset($_POST["kalorid"]) && 
+			isset($_POST["kuupaev"]) && 
+			!empty($_POST["toit"]) && 
+			!empty($_POST["kalorid"]) && 
+			!empty($_POST["kuupaev"]) 
 	) {
 		
-		$note = $Helper->cleanInput($_POST["note"]);
-		$color = $Helper->cleanInput($_POST["color"]);
-		
-		$Note->saveNote($note, $color);
+		$toit = $Helper->cleanInput($_POST["toit"]);
+		$kalorid = $Helper->cleanInput($_POST["kalorid"]);
+		$kuupaev = $Helper->cleanInput($_POST["kuupaev"]);
+		$Note->saveNote($toit, $kalorid, $kuupaev);
 		
 	}
 	
@@ -64,16 +66,20 @@
 	<a href="?logout=1">Logi välja</a>
 </p>
 <h2><i>Märkmed</i></h2>
-<h2>&lt;i&gt;Märkmed&lt;/i&gt;</h2>
 <form method="POST">
 			
-	<label>Märkus</label><br>
-	<input name="note" type="text">
+	<label>Toit</label><br>
+	<input name="toit" type="text">
 	
 	<br><br>
 	
-	<label>Värv</label><br>
-	<input name="color" type="color">
+	<label>Kalorid</label><br>
+	<input name="kalorid" type="text">
+	
+	<br><br>
+	
+	<label>Kuupäev</label><br>
+	<input name="kuupaev" type="text">
 				
 	<br><br>
 	
@@ -86,23 +92,6 @@
 	<input type="search" name ="q" value="<?=$q;?>">
 	<input type="submit" value="otsi">
 </form>
-
-<?php 
-
-	//iga liikme kohta massiivis
-	foreach ($notes as $n) {
-		
-		$style = "width:100px; 
-				  float:left;
-				  min-height:100px; 
-				  border: 1px solid gray;
-				  background-color: ".$n->noteColor.";";
-		
-		echo "<p style='  ".$style."  '>".$n->note."</p>";
-	}
-
-
-?>
 
 
 <h2 style="clear:both;">Tabel</h2>
@@ -129,28 +118,42 @@
 				$orderId = "ASC";
 			if(isset($_GET["order"])&&
 				$_GET["order"] == "ASC" &&
-				$_GET["sort"] == "Märkus" ){
+				$_GET["sort"] == "toit" ){
 					
 				$orderId = "DESC";
 				}
 				
 		$html .= "<th>
-				<a href='?q=".$q."&sort=Märkus&order=".$orderId."'>
-					Märkus
+				<a href='?q=".$q."&sort=toit&order=".$orderId."'>
+					toit
 					</a>
 				</th>";
 			
 				$orderId = "ASC";
 			if(isset($_GET["order"])&&
 				$_GET["order"] == "ASC" &&
-				$_GET["sort"] == "Värv" ){
+				$_GET["sort"] == "kalorid" ){
 					
 				$orderId = "DESC";
 				}
 				
 		$html .= "<th>
-				<a href='?q=".$q."&sort=Värv&order=".$orderId."'>
-					Värv
+				<a href='?q=".$q."&sort=kalorid&order=".$orderId."'>
+					kalorid
+					</a>
+				</th>";
+				
+			$orderId = "ASC";
+			if(isset($_GET["order"])&&
+				$_GET["order"] == "ASC" &&
+				$_GET["sort"] == "kuupaev" ){
+					
+				$orderId = "DESC";
+				}
+				
+		$html .= "<th>
+				<a href='?q=".$q."&sort=kuupaev&order=".$orderId."'>
+					kuupaev
 					</a>
 				</th>";
 			
@@ -161,8 +164,9 @@
 	foreach ($notes as $note) {
 		$html .= "<tr>";
 			$html .= "<td>".$note->id."</td>";
-			$html .= "<td>".$note->note."</td>";
-			$html .= "<td>".$note->noteColor."</td>";
+			$html .= "<td>".$note->toit."</td>";
+			$html .= "<td>".$note->kalorid."</td>";
+			$html .= "<td>".$note->kuupaev."</td>";
 			$html .= "<td><a href='edit.php?id=".$note->id."'>edit.php</a></td>";
 		$html .= "</tr>";
 	}

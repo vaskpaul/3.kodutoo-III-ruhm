@@ -20,7 +20,7 @@
 	//kas kasutaja uuendab andmeid
 	if(isset($_POST["update"])){
 		
-		$Note->updateNote($Helper->cleanInput($_POST["id"]), $Helper->cleanInput($_POST["note"]), $Helper->cleanInput($_POST["color"]));
+		$Note->updateNote($Helper->cleanInput($_POST["id"]), $Helper->cleanInput($_POST["toit"]), $Helper->cleanInput($_POST["kalorid"]), $Helper->cleanInput($_POST["kuupaev"]));
 		
 		header("Location: edit.php?id=".$_POST["id"]."&success=true");
         exit();	
@@ -40,10 +40,12 @@
 <h2>Muuda kirjet</h2>
   <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" >
 	<input type="hidden" name="id" value="<?=$_GET["id"];?>" > 
-  	<label for="note" >Märkus</label><br>
-	<textarea  id="note" name="note"><?php echo $c->note;?></textarea><br>
-  	<label for="color" >värv</label><br>
-	<input id="color" name="color" type="color" value="<?=$c->color;?>"><br><br>
+  	<label for="toit" >Toit</label><br>
+	<textarea  id="toit" name="toit"><?php echo $c->toit;?></textarea><br>
+	<label for="kalorid" >Kalorid</label><br>
+	<textarea  id="kalorid" name="kalorid"><?php echo $c->kalorid;?></textarea><br>
+	<label for="kuupaev" >Kuupäev</label><br>
+	<textarea  id="kuupaev" name="kuupaev"><?php echo $c->kuupaev;?></textarea><br>
   	
 	<input type="submit" name="update" value="Salvesta">
   </form>

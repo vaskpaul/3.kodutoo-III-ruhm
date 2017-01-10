@@ -9,12 +9,12 @@ class Note {
 	
 	/* KLASSI FUNKTSIOONID */
     
-    function saveNote($note, $color) {
+    function saveNote($toit, $kalorid, $kuupaev) {
 		
-		$stmt = $this->connection->prepare("INSERT INTO colorNotes (note, color) VALUES (?, ?)");
+		$stmt = $this->connection->prepare("INSERT INTO toitumine2 (toit, kalorid, kuupaev) VALUES (?, ?, ?)");
 		echo $this->connection->error;
 		
-		$stmt->bind_param("ss", $note, $color );
+		$stmt->bind_param("sss", $toit, $kalorid, $kuupaev );
 
 		if ( $stmt->execute() ) {
 			echo "salvestamine õnnestus";	
@@ -27,7 +27,7 @@ class Note {
 	
 	function getAllNotes($q, $sort, $order) {
 		//lubatud tulbad
-		$allowedSort = ["id", "note", "color"];
+		$allowedSort = ["id", "toit", "kalorid", "kuupaev"];
 		if(!in_array($sort, $allowedSort)){
 			//ei olnud lubatud tulpade sees
 			$sort = "id";  //ilu pärast võib lasta sorteerida ilu järgi, võib panna ka exit();
@@ -42,10 +42,9 @@ class Note {
 		if($q !=""){
 			echo "Otsin: ".$q;
 			$stmt = $this->connection->prepare("
-				SELECT id, note, color
-				FROM colorNotes
-				WHERE deleted IS NULL
-				AND (note LIKE ? OR color LIKE ?)
+				SELECT id, toit, kalorid, kuupaev
+				FROM toitumine2
+				AND (toit LIKE ? OR kalorid LIKE ? OR kuupaev LIKE ?)
 				ORDER BY $sort $orderBy
 		");
 		$searchWord = "%".$q."%";
@@ -53,26 +52,24 @@ class Note {
 		}else{
 			//ei otsi
 			$stmt = $this->connection->prepare("
-				SELECT id, note, color
-				FROM colorNotes
-				WHERE deleted IS NULL
+				SELECT id, toit, kalorid, kuupaev
+				FROM toitumine2
 				ORDER BY $sort $orderBy
 		");
 		}
-		$stmt->bind_result($id, $note, $color);
+		$stmt->bind_result($id, $toit, $kalorid, $kuupaev);
 		$stmt->execute();
 		
 		$result = array();
 		
-		// tsükkel töötab seni, kuni saab uue rea AB'i
-		// nii mitu korda palju SELECT lausega tuli
 		while ($stmt->fetch()) {
 			//echo $note."<br>";
 			
 			$object = new StdClass();
 			$object->id = $id;
-			$object->note = $note;
-			$object->noteColor = $color;
+			$object->toit = $toit;
+			$object->kalorid = $kalorid;
+			$object->kuupaev = $kuupaev;
 			
 			
 			array_push($result, $object);
@@ -85,10 +82,10 @@ class Note {
 	
 	function getSingleNoteData($edit_id){
     		
-		$stmt = $this->connection->prepare("SELECT note, color FROM colorNotes WHERE id=? AND deleted IS NULL");
+		$stmt = $this->connection->prepare("SELECT toit, kalorid, kuupaev FROM toitumine2 WHERE id=?");
 
 		$stmt->bind_param("i", $edit_id);
-		$stmt->bind_result($note, $color);
+		$stmt->bind_result($toit, $kalorid, $kuupaev);
 		$stmt->execute();
 		
 		//tekitan objekti
@@ -96,9 +93,9 @@ class Note {
 		
 		//saime ühe rea andmeid
 		if($stmt->fetch()){
-			// saan siin alles kasutada bind_result muutujaid
-			$n->note = $note;
-			$n->color = $color;
+			$n->toit = $toit;
+			$n->kalorid = $kalorid;
+			$n->kuupaev = $kuupaev;
 			
 			
 		}else{
@@ -115,10 +112,10 @@ class Note {
 	}
 
 
-	function updateNote($id, $note, $color){
+	function updateNote($id, $toit, $kalorid, $kuupaev){
 				
-		$stmt = $this->connection->prepare("UPDATE colorNotes SET note=?, color=? WHERE id=? AND deleted IS NULL");
-		$stmt->bind_param("ssi",$note, $color, $id);
+		$stmt = $this->connection->prepare("UPDATE toitumine2 SET toit=?, kalorid=?, kuupaev=? WHERE id=?");
+		$stmt->bind_param("sssi",$toit, $kalorid, $kuupaev, $id);
 		
 		// kas õnnestus salvestada
 		if($stmt->execute()){
@@ -133,7 +130,7 @@ class Note {
 	function deleteNote($id){
 		
 		$stmt = $this->connection->prepare("
-			UPDATE colorNotes 
+			UPDATE toitumine2 
 			SET deleted=NOW() 
 			WHERE id=? AND deleted IS NULL
 		");
